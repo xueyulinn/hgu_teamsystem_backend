@@ -28,11 +28,13 @@ public class User implements Serializable {
     /**
      * 账号
      */
+    @TableField("userAccount")
     private String userAccount;
 
     /**
      * 用户头像
      */
+    @TableField("avatarUrl")
     private String avatarUrl;
 
     /**
@@ -43,6 +45,8 @@ public class User implements Serializable {
     /**
      * 密码
      */
+    @TableField("userPassword")
+
     private String userPassword;
 
     /**
@@ -58,38 +62,51 @@ public class User implements Serializable {
     /**
      * 状态 0 - 正常
      */
+    @TableField("userStatus")
+
     private Integer userStatus;
 
     /**
      * 创建时间
      */
+    @TableField("createTime")
+
     private Date createTime;
 
     /**
-     *
+     * 更新时间
      */
+    @TableField("updateTime")
+
     private Date updateTime;
 
     /**
      * 是否删除
      */
     @TableLogic
+    @TableField("isDelete")
+
     private Integer isDelete;
 
     /**
      * 用户角色 0 - 普通用户 1 - 管理员
      */
+    @TableField("userRole")
+
     private Integer userRole;
 
     /**
      * 星球编号
      */
+    @TableField("planetCode")
+
     private String planetCode;
 
-    // https://github.com/liyupi
+    /**
+     * 标签 json 列表
+     */
+    private String tags;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
-
-// [加入编程导航](https://yupi.icu) 深耕编程提升【两年半】、国内净值【最高】的编程社群、用心服务【20000+】求学者、帮你自学编程【不走弯路】

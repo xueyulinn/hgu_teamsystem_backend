@@ -2,20 +2,27 @@ package com.hgu.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hgu.usercenter.common.ErrorCode;
 import com.hgu.usercenter.exception.BusinessException;
+import com.hgu.usercenter.mapper.UserMapper;
 import com.hgu.usercenter.model.domain.User;
 import com.hgu.usercenter.service.UserService;
-import com.hgu.usercenter.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.hgu.usercenter.contant.UserConstant.USER_LOGIN_STATE;
 
@@ -23,7 +30,6 @@ import static com.hgu.usercenter.contant.UserConstant.USER_LOGIN_STATE;
  * 用户服务实现类
  *
  * @author <a href="https://github.com/xueyulinn">薛钰麟</a>
- *
  */
 @Service
 @Slf4j
@@ -33,12 +39,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
 
-    // https://www.code-nav.cn/
 
     /**
      * 盐值，混淆密码
      */
-    private static final String SALT = "yupi";
+    private static final String SALT = "hgu";
 
     /**
      * 用户注册
@@ -102,7 +107,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return user.getId();
     }
 
-    // [加入星球](https://www.code-nav.cn/) 从 0 到 1 项目实战，经验拉满！10+ 原创项目手把手教程、7 日项目提升训练营、60+ 编程经验分享直播、1000+ 项目经验笔记
 
     /**
      * 用户登录
@@ -187,6 +191,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return 1;
     }
 
+    /**
+     * 根据标签搜索用户
+     *
+     * @param tagNames
+     * @return
+     */
+    @Override
+    public List<User> searchByTags(List<String> tagNames) {
+        if (CollectionUtils.isEmpty(tagNames)) {
+            throw new BusinessException(ErrorCode.NULL_ERROR);
+        }
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        //1. SQL query
+        // for (String tagName : tagNames) {
+        //     queryWrapper.like("tags", tagName);
+        // }
+        //
+        // List<User> users = userMapper.selectList(queryWrapper);
+        //
+        // return users.stream().map(this::getSafetyUser).collect(Collectors.toList());
+
+        //2. memory query
+        // 拿到所有user
+        List<User> users = userMapper.selectList(queryWrapper);
+        Gson gson = new Gson();
+        return users.stream().filter(user -> {
+                    String tags = user.getTags();
+                    Type setType = new TypeToken<Set<String>>() {
+                    }.getType();
+                    //获取到每一个user的tags
+                    Set<String> tagsSet = gson.fromJson(tags, setType);
+
+                    for (String tagName : tagNames) {
+                        if (!tagsSet.contains(tagName)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+        ).map(this::getSafetyUser).collect(Collectors.toList());
+    }
 }
 
-// [加入我们](https://yupi.icu) 从 0 到 1 项目实战，经验拉满！10+ 原创项目手把手教程、7 日项目提升训练营、1000+ 项目经验笔记、60+ 编程经验分享直播
