@@ -27,6 +27,7 @@ import static com.hgu.usercenter.contant.UserConstant.USER_LOGIN_STATE;
  */
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class UserController {
 
     @Resource
@@ -111,7 +112,6 @@ public class UserController {
         return ResultUtils.success(safetyUser);
     }
 
-    // https://yupi.icu/
 
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
@@ -153,4 +153,10 @@ public class UserController {
         return user != null && user.getUserRole() == ADMIN_ROLE;
     }
 
+    @GetMapping("/search/tags")
+    public BaseResponse<List<User>> searchByTags(@RequestParam(required = false) List<String> tagNameList) {
+        List<User> users = userService.searchByTags(tagNameList);
+
+        return ResultUtils.success(users);
+    }
 }

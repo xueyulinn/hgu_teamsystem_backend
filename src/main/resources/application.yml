@@ -2,20 +2,35 @@
 # @author <a href="https://github.com/xueyulinn">薛钰麟</a>
 spring:
   application:
-    name: user-center-backend
+    name: hgu_teamsystem_backend
   # DataSource Config
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/user_center
     username: root
     password: 1234
+
   # session 失效时间
   session:
-    timeout: 86400
+    timeout: 86400 #24h 单位:s
+    store-type: redis
+
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 10
+
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
 server:
   port: 8080
   servlet:
     context-path: /api
+    session:
+      cookie:
+        domain: localhost
   mybatis-plus:
     configuration:
       map-underscore-to-camel-case: false

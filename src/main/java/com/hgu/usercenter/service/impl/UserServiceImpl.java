@@ -18,7 +18,9 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -224,6 +226,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                     //获取到每一个user的tags
                     Set<String> tagsSet = gson.fromJson(tags, setType);
 
+                    tagsSet = Optional.ofNullable(tagsSet).orElse(new HashSet<>());
                     for (String tagName : tagNames) {
                         if (!tagsSet.contains(tagName)) {
                             return false;
